@@ -1,3 +1,11 @@
+# Ignore data
 *.png
 *.jpg
+# Ignore processed images
 *.pt
+
+# Ignore pycache
+*.pyc
+
+# Ignore model weights
+*.pth
