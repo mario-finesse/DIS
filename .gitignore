@@ -1,6 +1,9 @@
 # Ignore data
 *.png
 *.jpg
+# ignore datasets
+*.json
+
 # Ignore processed images
 *.pt
 

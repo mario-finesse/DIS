@@ -3,6 +3,7 @@
 ## We would like to thank Dr. Ibrahim Almakky (https://scholar.google.co.uk/citations?user=T9MTcK0AAAAJ&hl=en)
 ## for his helps in implementing cache machanism of our DIS dataloader.
 from __future__ import print_function, division
+from typing import List, Dict
 
 import numpy as np
 import random
@@ -21,12 +22,13 @@ import torch.nn.functional as F
 
 #### --------------------- DIS dataloader cache ---------------------####
 
-def get_im_gt_name_dict(datasets, flag='valid'):
+def get_im_gt_name_dict(datasets:List[Dict], flag:str='valid'):
     print("------------------------------", flag, "--------------------------------")
     name_im_gt_list = []
     for i in range(len(datasets)):
         print("--->>>", flag, " dataset ",i,"/",len(datasets)," ",datasets[i]["name"],"<<<---")
         tmp_im_list, tmp_gt_list = [], []
+        # get list of all images
         tmp_im_list = glob(datasets[i]["im_dir"]+os.sep+'*'+datasets[i]["im_ext"])
 
         # img_name_dict[im_dirs[i][0]] = tmp_im_list
@@ -196,9 +198,7 @@ class GOSNormalize(object):
 
 class GOSDatasetCache(Dataset):
 
-    def __init__(self, name_im_gt_list, cache_size=[], cache_path='./cache', cache_file_name='dataset.json', cache_boost=False, transform=None):
-
-
+    def __init__(self, name_im_gt_list:Dict, cache_size=[], cache_path='./cache', cache_file_name='dataset.json', cache_boost=False, transform=None):
         self.cache_size = cache_size
         self.cache_path = cache_path
         self.cache_file_name = cache_file_name
@@ -228,7 +228,7 @@ class GOSDatasetCache(Dataset):
         gt_path_list = [] # gt path
         im_ext_list = [] # im ext
         gt_ext_list = [] # gt ext
-        for i in range(0,len(name_im_gt_list)):
+        for i in range(0, len(name_im_gt_list)):
             dataset_names.append(name_im_gt_list[i]["dataset_name"])
             # dataset name repeated based on the number of images in this dataset
             dt_name_list.extend([name_im_gt_list[i]["dataset_name"] for x in name_im_gt_list[i]["im_path"]])
@@ -256,15 +256,17 @@ class GOSDatasetCache(Dataset):
 
         self.dataset = self.manage_cache(dataset_names)
 
-    def manage_cache(self,dataset_names):
+    def manage_cache(self, dataset_names:List[str]):
         if not os.path.exists(self.cache_path): # create the folder for cache
+            print("Creating folder:", self.cache_path)
             os.makedirs(self.cache_path)
         cache_folder = os.path.join(self.cache_path, "_".join(dataset_names)+"_"+"x".join([str(x) for x in self.cache_size]))
         if not os.path.exists(cache_folder): # check if the cache files are there, if not then cache
             return self.cache(cache_folder)
         return self.load_cache(cache_folder)
 
-    def cache(self,cache_folder):
+    def cache(self, cache_folder:str):
+        print(f"Creating folder {cache_folder}")
         os.mkdir(cache_folder)
         cached_dataset = deepcopy(self.dataset)
 
@@ -319,15 +321,17 @@ class GOSDatasetCache(Dataset):
             torch.save(torch.cat(gts_pt_list,dim=0),cached_dataset["gts_pt_dir"])
 
         try:
-            json_file = open(os.path.join(cache_folder, self.cache_file_name),"w")
+            json_file = open(os.path.join(cache_folder, self.cache_file_name), "w")
             json.dump(cached_dataset, json_file)
             json_file.close()
+            print(f"File {os.path.join(cache_folder, self.cache_file_name)} created")
         except Exception:
             raise FileNotFoundError("Cannot create JSON")
         return cached_dataset
 
-    def load_cache(self, cache_folder):
-        json_file = open(os.path.join(cache_folder,self.cache_file_name),"r")
+    def load_cache(self, cache_folder:str):
+        print(f"Loading contents from {cache_folder}")
+        json_file = open(os.path.join(cache_folder, self.cache_file_name),"r")
         dataset = json.load(json_file)
         json_file.close()
         ## if cache_boost is true, we will load the image npy and ground truth npy into the RAM
