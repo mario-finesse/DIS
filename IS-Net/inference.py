@@ -621,56 +621,21 @@ if __name__ == "__main__":
     train_datasets, valid_datasets = [], []
     dataset_1, dataset_1 = {}, {}
 
-    dataset_tr = {"name": "FINESSE-TR",
-                 "im_dir": "data/FINESSE/FINESSE-TR/im",
-                 "gt_dir": "data/FINESSE/FINESSE-TR/gt",
-                 "im_ext": ".jpg",
-                 "gt_ext": ".png",
-                 "cache_dir":"data/FINESSE-Cache/FINESSE-TR"}
+    # dataset_tr = {"name": "FINESSE-TR",
+    #              "im_dir": "data/FINESSE/FINESSE-TR/im",
+    #              "gt_dir": "data/FINESSE/FINESSE-TR/gt",
+    #              "im_ext": ".jpg",
+    #              "gt_ext": ".png",
+    #              "cache_dir":"data/FINESSE-Cache/FINESSE-TR"}
 
     dataset_vd = {"name": "FINESSE-VD",
-                 "im_dir": "data/FINESSE/FINESSE-VD/im",
-                 "gt_dir": "data/FINESSE/FINESSE-VD/gt",
-                 "im_ext": ".jpg",
+                 "im_dir": "data/input/hard-sdxl-human",
+                 "gt_dir": "data/masks/Slazzer/hard-sdxl-humans", 
+                 "im_ext": ".png",
                  "gt_ext": ".png",
-                 "cache_dir":"data/FINESSE-Cache/FINESSE-VD"}
+                 "cache_dir": "data/SDXL-Cache/SDXL-VD"}
 
-    # dataset_te1 = {"name": "DIS5K-TE1",
-    #              "im_dir": "../DIS5K/DIS-TE1/im",
-    #              "gt_dir": "../DIS5K/DIS-TE1/gt",
-    #              "im_ext": ".jpg",
-    #              "gt_ext": ".png",
-    #              "cache_dir":"../DIS5K-Cache/DIS-TE1"}
-
-    # dataset_te2 = {"name": "DIS5K-TE2",
-    #              "im_dir": "../DIS5K/DIS-TE2/im",
-    #              "gt_dir": "../DIS5K/DIS-TE2/gt",
-    #              "im_ext": ".jpg",
-    #              "gt_ext": ".png",
-    #              "cache_dir":"../DIS5K-Cache/DIS-TE2"}
-
-    # dataset_te3 = {"name": "DIS5K-TE3",
-    #              "im_dir": "../DIS5K/DIS-TE3/im",
-    #              "gt_dir": "../DIS5K/DIS-TE3/gt",
-    #              "im_ext": ".jpg",
-    #              "gt_ext": ".png",
-    #              "cache_dir":"../DIS5K-Cache/DIS-TE3"}
-
-    # dataset_te4 = {"name": "DIS5K-TE4",
-    #              "im_dir": "../DIS5K/DIS-TE4/im",
-    #              "gt_dir": "../DIS5K/DIS-TE4/gt",
-    #              "im_ext": ".jpg",
-    #              "gt_ext": ".png",
-    #              "cache_dir":"../DIS5K-Cache/DIS-TE4"}
-    # ### test your own dataset
-    # dataset_demo = {"name": "your-dataset",
-    #              "im_dir": "../your-dataset/im",
-    #              "gt_dir": "",
-    #              "im_ext": ".jpg",
-    #              "gt_ext": "",
-    #              "cache_dir":"../your-dataset/cache"}
-
-    train_datasets = [dataset_tr] ## users can create mutiple dictionary for setting a list of datasets as training set
+    # train_datasets = [dataset_tr] ## users can create mutiple dictionary for setting a list of datasets as training set
     # valid_datasets = [dataset_vd] ## users can create mutiple dictionary for setting a list of datasets as vaidation sets or inference sets
     valid_datasets = [dataset_vd] # dataset_vd, dataset_te1, dataset_te2, dataset_te3, dataset_te4] # and hypar["mode"] = "valid" for inference,
 
@@ -678,7 +643,7 @@ if __name__ == "__main__":
     hypar = {}
 
     ## -- 2.1. configure the model saving or restoring path --
-    hypar["mode"] = "train" ## "train": for training, "valid": for validation and inferening,
+    hypar["mode"] = "valid" ## "train": for training, "valid": for validation and inferening,
     ## in "valid" mode, it will calculate the accuracy as well as save the prediciton results into the "hypar["valid_out_dir"]", which shouldn't be ""
     ## otherwise only accuracy will be calculated and no predictions will be saved
     hypar["interm_sup"] = False ## in-dicate if activate intermediate feature supervision
@@ -690,9 +655,9 @@ if __name__ == "__main__":
         hypar["start_ite"] = 0 ## start iteration for the training, can be changed to match the restored training process
         hypar["gt_encoder_model"] = ""
     else: ## configure the segmentation output path and the to-be-used model weights path
-        hypar["valid_out_dir"] = "../your-results/"##"../DIS5K-Results-test" ## output inferenced segmentation maps into this fold
-        hypar["model_path"] = "../saved_models/IS-Net" ## load trained weights from this path
-        hypar["restore_model"] = "isnet.pth" ##"isnet.pth" ## name of the to-be-loaded weights
+        hypar["valid_out_dir"] = "output/hard-sdxl-humans" ##" output inferenced segmentation maps into this fold
+        hypar["model_path"] = "saved_models" ## load trained weights from this path
+        hypar["restore_model"] = "gpu_itr_6000_traLoss_0.0753_traTarLoss_0.0059_valLoss_0.08_valTarLoss_0.0065_maxF1_0.9984_mae_0.0019_time_0.029299.pth" ## name of the to-be-loaded weights
 
     # if hypar["restore_model"]!="":
     #     hypar["start_ite"] = int(hypar["restore_model"].split("_")[2])

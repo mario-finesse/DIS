@@ -43,8 +43,8 @@ def create_dataset_split(image_path:str, mask_path:str, train_image_dest:str, tr
     copy_files(val_images, image_path, val_image_dest)
     copy_files(val_masks, mask_path, val_mask_dest)
 
-images = "data/input/finesse_model_images"
-masks = "data/masks/Slazzer/finesse-model-images"
+images = "data/input/hard-sdxl-human"
+masks = "data/masks/Slazzer/hard-sdxl-humans"
 
 train_path_image = "data/FINESSE/FINESSE-TR/im"
 train_path_mask = "data/FINESSE/FINESSE-TR/gt"
